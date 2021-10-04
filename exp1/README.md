@@ -24,3 +24,9 @@ doc=[(id,freq)]
 ```
 
 `PostingList`是倒排表，`word`是词项，`doc`是词项所在的文档列表，`id`是文档编号，`freq`是词项在文档中的频率
+
+#### 创建环境
+
+```
+conda env create -f config.yaml
+```
