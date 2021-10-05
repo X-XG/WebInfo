@@ -1,87 +1,32 @@
-import nltk
 import os
 import json
+import nltk
 import re
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
-from nltk.tokenize import simple
-
-class Doc_Sparse:
-    def __init__(self,text):
-        self.document = text
-
-    def document_to_sentence(self):
-        # replace '\n' with blank 
-        self.document = re.sub('\n',' ',self.document)
-        if isinstance(self.document,str):
-            self.document = self.document
-        else:
-            raise ValueError('DOcument is not string!')
-        #delete '\n',''\r',''\t','' in the in the begining and end
-        self.document = self.document.strip()
-        sentences = nltk.sent_tokenize(self.document)
-        self.sentences = [sentence.strip() for sentence in sentences]
-
-    def sentence_to_tokenized(self):
-        original_words = []
-        for sentence in self.sentences:
-            original_words += nltk.word_tokenize(sentence)
-        self.original_words=[word.lower() for word in original_words if word.isalpha()]
-
-    def stem_word(self):
-        stemmer = PorterStemmer()
-        self.stemmed_words = [stemmer.stem(word) for word in self.original_words]
-
-    def stop_word(self):
-        stopwords.words('english')
-        clean_words = self.stemmed_words[:]
-        for word in self.stemmed_words:
-            if word in stopwords.words('english'):
-                clean_words.remove(word)
-        self.clean_words = clean_words
-
-    def freq_word(self):
-        self.fdist = nltk.FreqDist(self.clean_words)
-
-    def simple_word(self):
-        self.simple_words = list(set(self.clean_words))
-
-    def sparse(self):
-        self.document_to_sentence()
-        self.sentence_to_tokenized()
-        self.stem_word()
-        self.stop_word()
-        self.freq_word()
-        self.simple_word()
-        return self.simple_words,self.fdist
-
-class add_to_PostingList:
-    def __init__(self,PostingList,words,fdist,doc_id):
-        self.PostingList = PostingList
-        self.words = words
-        self.fdist = fdist
-        self.doc_id = doc_id
-
-    def add_to_PL(self):
-        for word in self.words:
-            if word in self.PostingList:
-            # existed word in PostingList
-                self.PostingList[word].append([self.doc_id,self.fdist.freq(word)])
-            else:
-                self.PostingList[word]=[]
-                self.PostingList[word].append([self.doc_id,self.fdist.freq(word)]) 
-        return self.PostingList   
-        
+from DocSparse import Doc_Sparse
 
 class PostingList_construct:
+    """
+        DocMap[0] is the number of news documents
+        DocMap[1..DocMap[0]] is the name of each documents
+
+        PostingList[0] is the number of words
+        PostingList[word_id] starting from 1 is [[doc_id,word_freq_in_this_doc]]
+
+        WordMap is the dictionary of words
+        WordMap[word] = word_id
+    """
     def __init__(self):
         # initialize PostingList and DocMap
-        PostingList = {}
-        DocMap = []
+        PostingList = [0]
+        DocMap = [0]
+        WordMap = {}
+        doc_id = 0
+        word_num = 0
 
         # read data files and construct the PostingList
         rootdir_base = '..\\dataset\\US_Financial_News_Articles\\2018_0'
-        doc_id = 0
         for i in range(1,6):
             rootdir = rootdir_base + str(i)
             list = os.listdir(rootdir)
@@ -102,24 +47,44 @@ class PostingList_construct:
                         words,fdist = doc_sparse.sparse()
 
                         #construct index inverted list
-                        add_to_pl = add_to_PostingList(PostingList,words,fdist,doc_id)
-                        PostingList = add_to_pl.add_to_PL()
+                        for word in words:
+                            if word in WordMap:
+                            # existed word in PostingList
+                                word_id = WordMap[word]
+                                PostingList[word_id].append([doc_id,fdist.freq(word)])
+                            else:
+                                word_num += 1
+                                WordMap[word] = word_num
+                                PostingList.append([])
+                                PostingList[word_num].append([doc_id,fdist.freq(word)])
+
                         DocMap.append(file_name)
+
+        DocMap[0] = doc_id
+        PostingList[0] = word_num
 
         self.DocMap = DocMap
         self.PostingList = PostingList
+        self.WordMap = WordMap
                         
 
     def write_to_file(self):
         #run this function
         #write to json 
         jsonDocMap = json.dumps(self.DocMap)
-        jsonPostingList = json.dumps(self.PostingList)
-        fileObject1 = open('DocMap.json', 'w')  
+        fileObject1 = open('..\\output\\DocMap.json', 'w')  
         fileObject1.write(jsonDocMap)  
-        fileObject1.close()  
-        fileObject2 = open('PostingList.json', 'w')  
+        fileObject1.close()
+
+        jsonPostingList = json.dumps(self.PostingList)
+        fileObject2 = open('..\\output\\PostingList.json', 'w')  
         fileObject2.write(jsonPostingList)  
         fileObject2.close() 
 
+        jsonWordMap = json.dumps(self.WordMap)
+        fileObject3 = open('..\\output\\WordMap.json', 'w')  
+        fileObject3.write(jsonWordMap)
+        fileObject3.close() 
 
+P = PostingList_construct()
+P.write_to_file()
