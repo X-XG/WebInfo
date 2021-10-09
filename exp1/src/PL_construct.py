@@ -33,7 +33,7 @@ class PostingList_construct:
             for j in range(0,len(list)):
                 path = os.path.join(rootdir,list[j])
                 file_name_split = path.split('\\')
-                file_name = file_name_split[-1]
+                file_name = "2018_0"+str(i)+"\\"+file_name_split[-1]
                 if os.path.isfile(path):
                     #procedures on document
                     with open(path,'r',encoding="utf-8")as fp:
