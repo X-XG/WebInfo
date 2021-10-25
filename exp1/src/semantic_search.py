@@ -12,6 +12,7 @@ from word2vec_train import Doc_Sparse as w2v_sparse
 from gensim.models import word2vec
 
 import numpy as np
+from scipy import sparse
 import math
 
 def takeSecond(elem):
@@ -41,7 +42,8 @@ class Semantic_Search:
             with open(wordmap_path,'r',encoding="utf-8")as fp_wordmap:
                 self.WordMap = json.load(fp_wordmap)
 
-            self.TF_IDF_array = np.load("..\\output\\TF_IDF.npy")
+            temp = sparse.load_npz("..\\output\\TF_IDF.npz")
+            self.TF_IDF_array = temp.tolil()
         
         if self.embedding_type == "word2vec":
             print("word2vec")
@@ -99,7 +101,8 @@ class Semantic_Search:
             self.doc_similarity =[0]
             for doc_id in range(1, self.doc_num + 1):
                 #cos similarity
-                sim = np.dot(self.TF_IDF_array[doc_id],self.TF_IDF)/(np.linalg.norm(self.TF_IDF_array)*np.linalg.norm(self.TF_IDF))
+                array = self.TF_IDF_array.getrow(doc_id).toarray().flatten()
+                sim = np.dot(array, self.TF_IDF)/(np.linalg.norm(array) * np.linalg.norm(self.TF_IDF))
                 self.doc_similarity.append([doc_id,sim])
 
         if self.embedding_type == "word2vec":
@@ -127,7 +130,8 @@ class Semantic_Search:
         return top10_doc_name
 
 #####words query............
-S = Semantic_Search("president high", synonym_tag = True, embedding_type = "word2vec")
-print(S.ranking())
+if __name__ == '__main__':
+    S = Semantic_Search("president high", synonym_tag = False, embedding_type = "tf-idf")
+    print(S.ranking())
         
     
