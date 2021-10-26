@@ -20,7 +20,7 @@ exp1/
 	|----WordMap.json
 	|----PostingList.json
 	|----TF_IDF.npz
-	|----word2vec\
+	|----word2vec/
 		|----word2vec.model
 		|----DocMap.json
 		|----doc_word_list.json
