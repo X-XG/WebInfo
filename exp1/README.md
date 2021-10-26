@@ -68,6 +68,8 @@ conda env create -f config.yaml
 
    运行`bool_search.py`
 
+   根据提示按课件要求输入查询语句
+
 2. 语义查询
 
    * tf-idf表征查询
@@ -82,9 +84,18 @@ conda env create -f config.yaml
 
      其它同上，运行`semantic_search.py`时，参数`synonym_tag=True`
 
+   根据提示选择参数
+
 3. 图片查询
 
    运行`image_search.py`
+   
+   - -s : 语义查询模式
+   - -b : bool查询模式
+   
+   返回最多10张图片链接，若想要直接打开图片，删除代码注释，还要求配置VPN
+   
+   根据提示选择语义查询模式或bool查询模式
 
 
 
@@ -150,5 +161,18 @@ conda env create -f config.yaml
 
 
 
+#### bool_search.py
+
+##### class Seacher
+
+- Getlist: 先对word进行词根化，再返回对应索引表
+- AND,OR,NOT 对索引表分别进行AND,OR,NOT操作
+- E,T,F: LL(1)文法递归下降函数
+- bool_search: bool搜索并返回文档地址与名字
 
 
+
+#### image_search.py
+
+- semantic_search, bool_search: 只调用其中一个，获得列表
+- img_show: 根据文档列表找到最多10张图片
