@@ -19,10 +19,11 @@ def takeSecond(elem):
         return elem[1]
 
 class Semantic_Search:
-    def __init__(self, query_str, synonym_tag = False,embedding_type = "tf-idf"):
+    def __init__(self, query_str, max_doc = 10,synonym_tag = False,embedding_type = "tf-idf"):
         self.query_str = query_str
         self.synonym_tag = synonym_tag
         self.embedding_type = embedding_type
+        self.max_doc = max_doc
 
     def read_file(self):
         if self.embedding_type == "tf-idf":
@@ -124,7 +125,7 @@ class Semantic_Search:
         self.doc_similarity[1:].sort(key=takeSecond, reverse=True)
         #pick the top10
         top10_doc_name = []
-        for i in range(1, min(self.doc_num,11)):
+        for i in range(1, min(self.doc_num, self.max_doc + 1)):
             doc_id = self.doc_similarity[i][0]
             top10_doc_name.append(self.DocMap[doc_id])
         return top10_doc_name
