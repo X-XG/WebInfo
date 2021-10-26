@@ -1,3 +1,3 @@
-### PostingList.json 和 TF_IDF.npz
+### 完整的output文件
 
-链接：https://rec.ustc.edu.cn/share/60d6f260-2d00-11ec-b109-ab1ed60c71eb 密码：exp1
+链接：https://rec.ustc.edu.cn/share/4a894b50-364d-11ec-b8d0-cbdedcec2e3b 密码：exp1
