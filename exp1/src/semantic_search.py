@@ -48,11 +48,11 @@ class Semantic_Search:
         
         if self.embedding_type == "word2vec":
             print("word2vec")
-            model_output_path = "..\\output\\word2vec.model"
+            model_output_path = "..\\output\\word2vec\\word2vec.model"
             self.model = word2vec.Word2Vec.load(model_output_path)
 
-            docmap_path = '..\\output\\docmap.json'
-            doc_word_list_path = '..\\output\\doc_word_list.json'
+            docmap_path = '..\\output\\word2vec\\docmap.json'
+            doc_word_list_path = '..\\output\\word2vec\\doc_word_list.json'
 
             with open(docmap_path,'r',encoding="utf-8")as fp_docmap:
                 self.DocMap = json.load(fp_docmap)
@@ -112,7 +112,7 @@ class Semantic_Search:
             self.doc_similarity =[]
             for doc_id in range(1,self.doc_num + 1):
                 doc_word = self.doc_word_list[doc_id - 1]
-                sim = self.model.n_similarity(query_word,doc_word)
+                sim = self.model.wv.n_similarity(query_word,doc_word)
                 self.doc_similarity.append([doc_id,sim])
 
 
@@ -132,8 +132,19 @@ class Semantic_Search:
 
 #####words query............
 if __name__ == '__main__':
-    query = input('this is semantic search, enter your query: ')
-    S = Semantic_Search(query, synonym_tag = False, embedding_type = "tf-idf")
+    print('this is semantic_search')
+    syn = input('use synonym mode (y/n)? ')
+    if syn == 'y':
+        syn_tag = True
+    else :
+        syn_tag = False
+
+    em = input('use word2vec mode (y/n)?, default is tf-idf ')
+    if em == 'y':
+        em_type = 'word2vec'
+    else :
+        em_type = 'tf-idf'
+
+    query = input('enter your query: ')
+    S = Semantic_Search(query, synonym_tag=syn_tag, embedding_type=em_type)
     print(S.ranking())
-        
-    
