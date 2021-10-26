@@ -15,11 +15,15 @@ exp1/
 	|----US_Financial_News_Articles/
 		...
 |----output/
+	|----README.md
 	|----DocMap.json
 	|----WordMap.json
 	|----PostingList.json
 	|----TF_IDF.npz
-	|----word2vec.model
+	|----word2vec\
+		|----word2vec.model
+		|----DocMap.json
+		|----doc_word_list.json
 |----report.pdf
 |----config.yaml
 |----README
@@ -67,6 +71,8 @@ conda env create -f config.yaml
 
 * 运行`tf_idf_construct.py`生成`TF_IDF.npy`
 * 运行`semantic_search.py`进行语义查询
+
+关于output文件，过于大的文件并未上传，用睿客云链接的形式
 
 
 
