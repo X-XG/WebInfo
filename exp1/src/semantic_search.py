@@ -99,7 +99,7 @@ class Semantic_Search:
         if self.embedding_type == "tf-idf":
             self.sparse_query()
             self.tf_idf_cal()
-            self.doc_similarity =[0]
+            self.doc_similarity =[]
             for doc_id in range(1, self.doc_num + 1):
                 #cos similarity
                 array = self.TF_IDF_array.getrow(doc_id).toarray().flatten()
@@ -109,7 +109,7 @@ class Semantic_Search:
         if self.embedding_type == "word2vec":
             query_word_sparse = w2v_sparse(self.query_str)
             query_word = query_word_sparse.sparse()
-            self.doc_similarity =[0]
+            self.doc_similarity =[]
             for doc_id in range(1,self.doc_num + 1):
                 doc_word = self.doc_word_list[doc_id - 1]
                 sim = self.model.n_similarity(query_word,doc_word)
@@ -122,10 +122,10 @@ class Semantic_Search:
         """return top10_doc_name"""
         self.similarity()
         #sort
-        self.doc_similarity[1:].sort(key=takeSecond, reverse=True)
+        self.doc_similarity.sort(key=takeSecond, reverse=True)
         #pick the top10
         top10_doc_name = []
-        for i in range(1, min(self.doc_num, self.max_doc + 1)):
+        for i in range(0, min(self.doc_num, self.max_doc)):
             doc_id = self.doc_similarity[i][0]
             top10_doc_name.append(self.DocMap[doc_id])
         return top10_doc_name
