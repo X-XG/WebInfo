@@ -5,12 +5,23 @@ exp1/
 |----src/
 	|----bool_search.py
 	|----semantic_search.py
+	|----image_search.py
+	|----DocSparse.py
+	|----PL_construct.py
+	|----tf_idf_construct.py
+	|----word2vec_train.py
 |----dataset/
 	|----QueryVocabulary.txt
-	|----US_Financial_News_Articles
+	|----US_Financial_News_Articles/
+		...
 |----output/
-	|----{your output files}
+	|----DocMap.json
+	|----WordMap.json
+	|----PostingList.json
+	|----TF_IDF.npz
+	|----word2vec.model
 |----report.pdf
+|----config.yaml
 |----README
 ```
 
@@ -50,9 +61,17 @@ conda env create -f config.yaml
 
 
 
-#### 运行顺序
+#### 构建output运行顺序
 
 * 运行`PL_construct.py`生成`DocMap.json`,`PostingList.json`,`WordMap.json`
 
 * 运行`tf_idf_construct.py`生成`TF_IDF.npy`
 * 运行`semantic_search.py`进行语义查询
+
+
+
+#### 查询时
+
+由于查询句子在命令行中会被拆分，所以在程序运行时通过`input`输入查询句子
+
+bool查询、语义查询、图片查询分别运行对应的`python`文件

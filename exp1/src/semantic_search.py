@@ -132,7 +132,8 @@ class Semantic_Search:
 
 #####words query............
 if __name__ == '__main__':
-    S = Semantic_Search("president high", synonym_tag = False, embedding_type = "tf-idf")
+    query = input('this is semantic search, enter your query: ')
+    S = Semantic_Search(query, synonym_tag = False, embedding_type = "tf-idf")
     print(S.ranking())
         
     

@@ -1,5 +1,5 @@
 import json
-
+from nltk.stem import PorterStemmer
 '''
 LL(1) grammar:
     E-> T OR E | T
@@ -11,19 +11,30 @@ class Searcher:
     def __init__(self):
         postinglist_path = '..\\output\\PostingList.json'
         wordmap_path = '..\\output\\wordmap.json'
+        docmap_path = '..\\output\\docmap.json'
 
         with open(wordmap_path,'r',encoding="utf-8")as fp_wordmap:
             self.WordMap = json.load(fp_wordmap)
+        
+        with open(docmap_path,'r',encoding="utf-8")as fp_docmap:
+            self.DocMap = json.load(fp_docmap)
+            self.doc_num = self.DocMap[0]
 
         with open(postinglist_path,'r',encoding="utf-8")as fp_postinglist:
             self.PostingList = json.load(fp_postinglist)
             self.word_num = self.PostingList[0]
+        
+        self.stemmer = PorterStemmer()
 
     def bool_search(self ,query:str):
         self.token = query.replace('(', ' ( ').replace(')', ' ) ').split()
         self.ptr = 0
         self.token.append('$')
-        return self.E()[0]
+        doc_nums =  self.E()[0]
+        doc_names = []
+        for doc_id in doc_nums:
+            doc_names.append(self.DocMap[doc_id])
+        return doc_names
 
     def E(self):
         T = self.T()
@@ -47,7 +58,7 @@ class Searcher:
         else:
             return (F[0], True)
 
-    def F(self):    
+    def F(self): 
         if(self.token[self.ptr]=='NOT'):
             self.ptr += 1
             F = self.F()
@@ -62,8 +73,13 @@ class Searcher:
             self.ptr += 1
             return (list, True)
 
-    def GetList(self, word):    
-        word_id = self.WordMap[word]
+    def GetList(self, word):
+        word = self.stemmer.stem(word)
+        if word in self.WordMap:    
+            word_id = self.WordMap[word]
+        else:
+            print('there is no word: '+word)
+            exit(-1)
         pre_list = self.PostingList[word_id]
         return [x[0] for x in pre_list]
 
@@ -120,5 +136,6 @@ class Searcher:
         return [x for x in all if x not in L]
 
 if __name__ == '__main__':
-    a = Searcher()
-    print(a.bool_search('(intern AND uup)AND NOT establish OR support' ))
+    query = input('this is bool search, enter your query: ')
+    S = Searcher()
+    print(S.bool_search(query))

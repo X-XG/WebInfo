@@ -27,13 +27,17 @@ def img_show(flist: list):
         # io.show()
 
 if __name__ == '__main__':
-    if sys.argv[1] == '-s':
-        S = semantic_search.Semantic_Search(sys.argv[2], max_doc=30,synonym_tag = False, embedding_type = "tf-idf")
+    print('this is image search')
+    mode = input('type \'-s\' to enter semantic mode or \'-b\' to enter bool mode: ')
+    if mode == '-s':
+        qurey = input('this is semanic mode, type your query: ')
+        S = semantic_search.Semantic_Search(qurey, max_doc=30,synonym_tag = False, embedding_type = "tf-idf")
         flist = S.ranking()
         del S
-    elif sys.argv[1] == '-b':
+    elif mode == '-b':
+        qurey = input('this is bool mode, type your query: ')
         S = Searcher()
-        flist = S.bool_search(sys.argv[2])
+        flist = S.bool_search(qurey)
         del S
     else:
         print('error')
