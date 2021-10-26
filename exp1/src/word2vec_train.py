@@ -85,15 +85,16 @@ class Word2Vec_Embedding:
 
     def write_to_file(self):
         jsonDocMap = json.dumps(self.DocMap)
-        fileObject1 = open('..\\output\\DocMap.json', 'w')  
+        fileObject1 = open('..\\output\\word2vec\\DocMap.json', 'w')  
         fileObject1.write(jsonDocMap)  
         fileObject1.close()
 
         jsonDocMap = json.dumps(self.sentences)
-        fileObject2 = open('..\\output\\doc_word_list.json', 'w')  
+        fileObject2 = open('..\\output\\word2vec\\doc_word_list.json', 'w')  
         fileObject2.write(jsonDocMap)  
         fileObject2.close()
 
-w2v = Word2Vec_Embedding()
-w2v.train("..\\output\\word2vec.model")
-w2v.write_to_file()
+if __name__ == '__main__':
+    w2v = Word2Vec_Embedding()
+    w2v.train("..\\output\\word2vec\\word2vec.model")
+    w2v.write_to_file()
