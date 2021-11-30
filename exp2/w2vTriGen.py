@@ -50,7 +50,7 @@ for sig in map:
     print(str(count) + '\t' +'cur: ' + str(rel-rel_base) +'\t' +'total: ' + str(total_append))
     # sim.sort(reverse=True)
 
-print(rel)
+print(rel_max)
     # rel = 0
     # for s in sim:
     #     if s > 0.95:
