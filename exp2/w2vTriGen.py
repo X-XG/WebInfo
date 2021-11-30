@@ -1,5 +1,4 @@
 from gensim.models import Word2Vec
-import pandas as pd
 
 common_texts = []
 map = {}
@@ -41,8 +40,6 @@ for sig in map:
                 rel_max = rel
             f.write(sig + '\t'+ str(rel) + '\t' + ent + '\n')
             f.write(ent + '\t'+ str(rel) + '\t' + sig + '\n')
-            # print(sig + '\t'+ str(rel) + '\t' + ent)
-            # print(ent + '\t'+ str(rel) + '\t' + sig)
     
     count += 1
     # if count % 10 == 0:
