@@ -1,7 +1,6 @@
 /.vscode
 /exp1
 test.py
-/exp2/data
 /exp2/refresh
 /exp2/FB15k-237
 /exp2/ent_map.py
@@ -11,3 +10,9 @@ test.py
 /OpenKE-benchmarks-FB15K237
 /ljy2
 /finaltest
+/exp2/testgen.py
+/exp2/test
+/exp2/ent_map_3.py
+/exp2/stash
+/exp2/bak
+/exp2/rhash
