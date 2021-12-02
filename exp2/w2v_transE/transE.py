@@ -80,10 +80,10 @@ class TransE:
         self.loss = 0
 
     def reload(self, temp_path):
-        with open(temp_path + 'entity_temp'+ '.pkl', 'wb') as f:
+        with open(temp_path + 'entity_temp'+ '.pkl', 'rb') as f:
             entity_dict = pickle.load(f)
 
-        with open('relation_temp'+ '.pkl', 'wb') as f:
+        with open(temp_path +'relation_temp'+ '.pkl', 'rb') as f:
             relation_dict = pickle.load(f)
         
         self.entity = entity_dict
@@ -135,11 +135,12 @@ class TransE:
             print("loss: ", self.loss)
 
             #保存临时结果
-            if epoch % 10 == 0:
+            if epoch % 5 == 3:
                 with open(temp_path + "entity_temp.pkl", "wb") as f_e:
                     pickle.dump(self.entity, f_e)
                 with open(temp_path + "relation_temp.pkl", "wb") as f_r:
                     pickle.dump(self.relation, f_r)
+                print('*****write temp file in epoch: ', epoch)
 
         print("写入文件...")
         with codecs.open("entity_50dim_batch400", "w") as f1:
@@ -270,5 +271,6 @@ if __name__=='__main__':
     print("Complete load. entity : %d , relation : %d , triple : %d" % (len(entity_set),len(relation_set),len(triple_list)))
 
     transE = TransE(entity_set, relation_set, triple_list, './output/ent_rel_sim.npy', use_w2v = True, nbatch=100, embedding_dim=50, learning_rate=0.01, margin=1,L1=True)
-    transE.emb_initialize()
-    transE.train(epochs=30, temp_path='./temp')
+    # transE.emb_initialize()
+    transE.reload('./temp/')
+    transE.train(epochs=35, temp_path='./temp/')
