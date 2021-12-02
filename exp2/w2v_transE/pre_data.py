@@ -23,9 +23,17 @@ def data2id(num, data_path):
     f.close()
 
 if __name__ == '__main__':
-    base_path = './'
+    base_path = './data/'
     ent_num = 14541
     rel_num = 237
+
+    try:
+        import os
+        import shutil
+        if not os.path.exists('./data/'):
+            shutil.copytree('../data/', './data/')
+    except:
+        print('error in data gen')
 
     train_path = base_path + 'train.txt'
     dev_path = base_path + 'dev.txt'
