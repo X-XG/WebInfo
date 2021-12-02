@@ -6,32 +6,17 @@ import copy
 import time
 import pickle
 
-entity2id = {}
-relation2id = {}
-
-
-def data_loader(file):
+def data_loader(file, ent_num, rel_num):
     file1 = file + "train.txt"
-    file2 = file + "entity2id.txt"
-    file3 = file + "relation2id.txt"
-
-    with open(file2, 'r') as f1, open(file3, 'r') as f2:
-        lines1 = f1.readlines()
-        lines2 = f2.readlines()
-        for line in lines1:
-            line = line.strip().split('\t')
-            if len(line) != 2:
-                continue
-            entity2id[line[0]] = line[1]
-
-        for line in lines2:
-            line = line.strip().split('\t')
-            if len(line) != 2:
-                continue
-            relation2id[line[0]] = line[1]
 
     entity_set = set()
     relation_set = set()
+
+    for i in range(ent_num):
+        entity_set.add(str(i))
+    for j in range(rel_num):
+        relation_set.add(str(j))
+
     triple_list = []
 
     with codecs.open(file1, 'r') as f:
@@ -40,17 +25,11 @@ def data_loader(file):
             triple = line.strip().split("\t")
             if len(triple) != 3:
                 continue
-
-            h_ = entity2id[triple[0]]
-            t_ = entity2id[triple[1]]
-            r_ = relation2id[triple[2]]
+            h_ = triple[0]
+            t_ = triple[1]
+            r_ = triple[2]
 
             triple_list.append([h_,t_,r_])
-
-            entity_set.add(h_)
-            entity_set.add(t_)
-
-            relation_set.add(r_)
 
     return entity_set, relation_set, triple_list
 
@@ -143,13 +122,13 @@ class TransE:
                 print('*****write temp file in epoch: ', epoch)
 
         print("写入文件...")
-        with codecs.open("entity_50dim_batch400", "w") as f1:
+        with codecs.open("./output/entity_embedding", "w") as f1:
             for e in self.entity.keys():
                 f1.write(e + "\t")
                 f1.write(str(list(self.entity[e])))
                 f1.write("\n")
 
-        with codecs.open("relation50dim_batch400", "w") as f2:
+        with codecs.open("./output/relation_embedding", "w") as f2:
             for r in self.relation.keys():
                 f2.write(r + "\t")
                 f2.write(str(list(self.relation[r])))
@@ -266,11 +245,11 @@ class TransE:
 
 if __name__=='__main__':
     file1 = "./data/"
-    entity_set, relation_set, triple_list = data_loader(file1)
+    entity_set, relation_set, triple_list = data_loader(file1, 14541, 237)
     print("load file...")
     print("Complete load. entity : %d , relation : %d , triple : %d" % (len(entity_set),len(relation_set),len(triple_list)))
 
-    transE = TransE(entity_set, relation_set, triple_list, './output/ent_rel_sim.npy', use_w2v = True, nbatch=100, embedding_dim=50, learning_rate=0.01, margin=1,L1=True)
+    transE = TransE(entity_set, relation_set, triple_list, './output/ent_rel_sim.npy', use_w2v = False, nbatch=100, embedding_dim=50, learning_rate=0.01, margin=1,L1=True)
     # transE.emb_initialize()
     transE.reload('./temp/')
-    transE.train(epochs=35, temp_path='./temp/')
+    transE.train(epochs=100, temp_path='./temp/')

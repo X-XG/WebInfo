@@ -2,7 +2,7 @@ import numpy as np
 import codecs
 import operator
 import json
-from transE import data_loader,entity2id,relation2id
+from transE import data_loader
 
 def dataloader(entity_file,relation_file,test_file):
     # entity_file: entity \t embedding
@@ -30,9 +30,9 @@ def dataloader(entity_file,relation_file,test_file):
             triple = line.strip().split('\t')
             if len(triple) != 3:
                 continue
-            h_ = entity2id[triple[0]]
-            t_ = entity2id[triple[1]]
-            r_ = relation2id[triple[2]]
+            h_ = triple[0]
+            t_ = triple[1]
+            r_ = triple[2]
 
             test_triple.append(tuple((h_,t_,r_)))
 
@@ -102,10 +102,10 @@ class Test:
 
 
 if __name__ == '__main__':
-    _, _, train_triple = data_loader("./data/")
+    _, _, train_triple = data_loader("./data/",14541, 237)
 
     entity_dict, relation_dict, test_triple = \
-        dataloader("entity_50dim_batch400","relation50dim_batch400",
+        dataloader("./output/entity_embedding","./output/relation_embedding",
                    "data/test.txt")
 
 
