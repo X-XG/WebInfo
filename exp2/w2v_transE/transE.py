@@ -264,6 +264,6 @@ if __name__=='__main__':
     print("load file...")
     print("Complete load. entity : %d , relation : %d , triple : %d" % (len(entity_set),len(relation_set),len(triple_list)))
 
-    transE = TransE(entity_set, relation_set, triple_list, 'ent_rel_sim.npy', use_w2v = True, nbatch=100, embedding_dim=50, learning_rate=0.01, margin=1,L1=True)
+    transE = TransE(entity_set, relation_set, triple_list, './output/ent_rel_sim.npy', use_w2v = True, nbatch=100, embedding_dim=50, learning_rate=0.01, margin=1,L1=True)
     transE.emb_initialize()
-    transE.train(epochs=401)
+    transE.train(epochs=30)

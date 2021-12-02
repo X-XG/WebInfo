@@ -2,7 +2,7 @@ from gensim.models import Word2Vec
 import numpy as np
 import pickle
 
-def w2vModel(data_base):
+def w2vModel(data_base, output_path):
     common_texts = []
     ent_map = {}
     rel_map = {}
@@ -25,20 +25,20 @@ def w2vModel(data_base):
     f.close()
 
     model = Word2Vec(sentences=common_texts, vector_size=100, window=5, min_count=1, workers=4)
-    model.save("word2vec.model")
+    model.save(output_path + "word2vec.model")
 
-    with open('ent_map_text'+ '.pkl', 'wb') as f:
+    with open(output_path + 'ent_map_text'+ '.pkl', 'wb') as f:
         pickle.dump(ent_map, f)
     
-    with open('rel_map_text'+ '.pkl', 'wb') as f:
+    with open(output_path +'rel_map_text'+ '.pkl', 'wb') as f:
         pickle.dump(rel_map, f)
 
 
-def ent_rel_sim(ent_num, rel_num):
-    model = Word2Vec.load("word2vec.model")
-    with open('ent_map_text' + '.pkl', 'rb') as f:
+def ent_rel_sim(ent_num, rel_num, output_path):
+    model = Word2Vec.load(output_path + "word2vec.model")
+    with open(output_path + 'ent_map_text' + '.pkl', 'rb') as f:
         ent_map = pickle.load(f)
-    with open('rel_map_text' + '.pkl', 'rb') as f:
+    with open(output_path + 'rel_map_text' + '.pkl', 'rb') as f:
         rel_map = pickle.load(f)
 
     ent_rel_sim = np.zeros((ent_num, rel_num))
@@ -50,8 +50,8 @@ def ent_rel_sim(ent_num, rel_num):
         for j in range(rel_num):
             ent_rel_sim[i][j] = model.wv.n_similarity(ent_map[i], rel_map[j])
     
-    np.save('ent_rel_sim.npy', ent_rel_sim)
+    np.save(output_path + 'ent_rel_sim.npy', ent_rel_sim)
     
 if __name__  == '__main__':
-    w2vModel('./data/')
-    ent_rel_sim(14541, 237)
+    w2vModel('../data/', './output/')
+    ent_rel_sim(14541, 237, './output/')
