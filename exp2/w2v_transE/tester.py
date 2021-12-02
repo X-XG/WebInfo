@@ -66,29 +66,35 @@ class Test:
 
             for entity in self.entity_dict.keys():
                 corrupted_tail = [triple[0],entity,triple[2]]
-                if self.isFit:
-                    if corrupted_tail not in self.train_triple:
-                        h_emb = self.entity_dict[corrupted_tail[0]]
-                        r_emb = self.relation_dict[corrupted_tail[2]]
-                        t_emb = self.entity_dict[corrupted_tail[1]]
-                        rank_tail_dict[tuple(corrupted_tail)] = distance(h_emb, r_emb, t_emb)
-                else:
-                    h_emb = self.entity_dict[corrupted_tail[0]]
-                    r_emb = self.relation_dict[corrupted_tail[2]]
-                    t_emb = self.entity_dict[corrupted_tail[1]]
-                    rank_tail_dict[tuple(corrupted_tail)] = distance(h_emb, r_emb, t_emb)
+                # if self.isFit:
+                    # if corrupted_tail not in self.train_triple:
+                        # h_emb = self.entity_dict[corrupted_tail[0]]
+                        # r_emb = self.relation_dict[corrupted_tail[2]]
+                        # t_emb = self.entity_dict[corrupted_tail[1]]
+                        # rank_tail_dict[tuple(corrupted_tail)] = distance(h_emb, r_emb, t_emb)
+                # else:
+                h_emb = self.entity_dict[corrupted_tail[0]]
+                r_emb = self.relation_dict[corrupted_tail[2]]
+                t_emb = self.entity_dict[corrupted_tail[1]]
+                rank_tail_dict[tuple(corrupted_tail)] = distance(h_emb, r_emb, t_emb)
 
             rank_tail_sorted = sorted(rank_tail_dict.items(),key = operator.itemgetter(1))
 
             #hits
             first_hit = True
-            for i in range(5):
-                if i != 4:
+            count = 0
+            for i in range(10):
+                if(self.isFit):
+                    if rank_tail_sorted[i][0] in self.train_triple:
+                        continue
+                count += 1
+                if count < 5:
                     f.write(rank_tail_sorted[i][0][1])
                     f.write(',')
                 else:      
                     f.write(rank_tail_sorted[i][0][1])
                     f.write('\n')
+                    break
                 if first_hit and triple[1] == rank_tail_sorted[i][0][1]:
                     hits += 1
                     first_hit = False
@@ -109,7 +115,7 @@ if __name__ == '__main__':
                    "data/test.txt")
 
 
-    test = Test(entity_dict,relation_dict,test_triple,train_triple,isFit=False)
+    test = Test(entity_dict,relation_dict,test_triple,train_triple,isFit=True)
     test.rank('./output/')
     print("entity hits@5: ", test.hits5)
 
