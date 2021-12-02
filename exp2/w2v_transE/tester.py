@@ -53,35 +53,18 @@ class Test:
         self.train_triple = train_triple
         self.isFit = isFit
 
-        self.hits10 = 0
+        self.hits5 = 0
         self.mean_rank = 0
 
-        self.relation_hits10 = 0
-        self.relation_mean_rank = 0
-
-    def rank(self):
+    def rank(self, output_path):
         hits = 0
-        rank_sum = 0
         step = 1
+        f = open(output_path + 'tail_predict.txt', 'w')
 
         for triple in self.test_triple:
-            rank_head_dict = {}
             rank_tail_dict = {}
 
             for entity in self.entity_dict.keys():
-                corrupted_head = [entity,triple[1],triple[2]]
-                if self.isFit:
-                    if corrupted_head not in self.train_triple:
-                        h_emb = self.entity_dict[corrupted_head[0]]
-                        r_emb = self.relation_dict[corrupted_head[2]]
-                        t_emb = self.entity_dict[corrupted_head[1]]
-                        rank_head_dict[tuple(corrupted_head)]=distance(h_emb,r_emb,t_emb)
-                else:
-                    h_emb = self.entity_dict[corrupted_head[0]]
-                    r_emb = self.relation_dict[corrupted_head[2]]
-                    t_emb = self.entity_dict[corrupted_head[1]]
-                    rank_head_dict[tuple(corrupted_head)] = distance(h_emb, r_emb, t_emb)
-
                 corrupted_tail = [triple[0],entity,triple[2]]
                 if self.isFit:
                     if corrupted_tail not in self.train_triple:
@@ -95,88 +78,39 @@ class Test:
                     t_emb = self.entity_dict[corrupted_tail[1]]
                     rank_tail_dict[tuple(corrupted_tail)] = distance(h_emb, r_emb, t_emb)
 
-            rank_head_sorted = sorted(rank_head_dict.items(),key = operator.itemgetter(1))
             rank_tail_sorted = sorted(rank_tail_dict.items(),key = operator.itemgetter(1))
 
-            #rank_sum and hits
-            for i in range(len(rank_head_sorted)):
-                if triple[0] == rank_head_sorted[i][0][0]:
-                    if i<10:
-                        hits += 1
-                    rank_sum = rank_sum + i + 1
-                    break
-
-            for i in range(len(rank_tail_sorted)):
-                if triple[1] == rank_tail_sorted[i][0][1]:
-                    if i<10:
-                        hits += 1
-                    rank_sum = rank_sum + i + 1
-                    break
+            #hits
+            first_hit = True
+            for i in range(5):
+                if i != 4:
+                    f.write(rank_tail_sorted[i][0][1])
+                    f.write(',')
+                else:      
+                    f.write(rank_tail_sorted[i][0][1])
+                    f.write('\n')
+                if first_hit and triple[1] == rank_tail_sorted[i][0][1]:
+                    hits += 1
+                    first_hit = False
 
             step += 1
-            if step % 5000 == 0:
-                print("step ", step, " ,hits ",hits," ,rank_sum ",rank_sum)
+            if step % 10 == 0:
+                print("step ", step, ", hits ",hits, ', rate: ',hits/step)
                 print()
 
-        self.hits10 = hits / (2*len(self.test_triple))
-        self.mean_rank = rank_sum / (2*len(self.test_triple))
+        self.hits5 = hits / (2*len(self.test_triple))
 
-    def relation_rank(self):
-        hits = 0
-        rank_sum = 0
-        step = 1
-
-        for triple in self.test_triple:
-            rank_dict = {}
-            for r in self.relation_dict.keys():
-                corrupted_relation = (triple[0],triple[1],r)
-                if self.isFit and corrupted_relation in self.train_triple:
-                    continue
-                h_emb = self.entity_dict[corrupted_relation[0]]
-                r_emb = self.relation_dict[corrupted_relation[2]]
-                t_emb = self.entity_dict[corrupted_relation[1]]
-                rank_dict[r]=distance(h_emb, r_emb, t_emb)
-
-            rank_sorted = sorted(rank_dict.items(),key = operator.itemgetter(1))
-
-            rank = 1
-            for i in rank_sorted:
-                if triple[2] == i[0]:
-                    break
-                rank += 1
-            if rank<10:
-                hits += 1
-            rank_sum = rank_sum + rank + 1
-
-            step += 1
-            if step % 5000 == 0:
-                print("relation step ", step, " ,hits ", hits, " ,rank_sum ", rank_sum)
-                print()
-
-        self.relation_hits10 = hits / len(self.test_triple)
-        self.relation_mean_rank = rank_sum / len(self.test_triple)
 
 if __name__ == '__main__':
-    _, _, train_triple = data_loader("data\\")
+    _, _, train_triple = data_loader("./data/")
 
     entity_dict, relation_dict, test_triple = \
         dataloader("entity_50dim_batch400","relation50dim_batch400",
-                   "data\\test.txt")
+                   "data/test.txt")
 
 
     test = Test(entity_dict,relation_dict,test_triple,train_triple,isFit=False)
-    test.rank()
-    print("entity hits@10: ", test.hits10)
-    print("entity meanrank: ", test.mean_rank)
+    test.rank('./output/')
+    print("entity hits@5: ", test.hits5)
 
-    test.relation_rank()
-    print("relation hits@10: ", test.relation_hits10)
-    print("relation meanrank: ", test.relation_mean_rank)
-
-    f = open("result.txt",'w')
-    f.write("entity hits@10: "+ str(test.hits10) + '\n')
-    f.write("entity meanrank: " + str(test.mean_rank) + '\n')
-    f.write("relation hits@10: " + str(test.relation_hits10) + '\n')
-    f.write("relation meanrank: " + str(test.relation_mean_rank) + '\n')
-    f.close()
 

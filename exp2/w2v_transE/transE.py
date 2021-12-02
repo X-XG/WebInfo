@@ -4,6 +4,7 @@ import math
 import numpy as np
 import copy
 import time
+import pickle
 
 entity2id = {}
 relation2id = {}
@@ -78,6 +79,16 @@ class TransE:
 
         self.loss = 0
 
+    def reload(self, temp_path):
+        with open(temp_path + 'entity_temp'+ '.pkl', 'wb') as f:
+            entity_dict = pickle.load(f)
+
+        with open('relation_temp'+ '.pkl', 'wb') as f:
+            relation_dict = pickle.load(f)
+        
+        self.entity = entity_dict
+        self.relation = relation_dict
+
     def emb_initialize(self):
         relation_dict = {}
         entity_dict = {}
@@ -97,7 +108,7 @@ class TransE:
         self.relation = relation_dict
         self.entity = entity_dict
 
-    def train(self, epochs):
+    def train(self, epochs, temp_path):
         nbatches = self.nbatch
         batch_size = len(self.triple_list) // nbatches
         print("batch size: ", batch_size)
@@ -124,17 +135,11 @@ class TransE:
             print("loss: ", self.loss)
 
             #保存临时结果
-            if epoch % 20 == 0:
-                with codecs.open("entity_temp", "w") as f_e:
-                    for e in self.entity.keys():
-                        f_e.write(e + "\t")
-                        f_e.write(str(list(self.entity[e])))
-                        f_e.write("\n")
-                with codecs.open("relation_temp", "w") as f_r:
-                    for r in self.relation.keys():
-                        f_r.write(r + "\t")
-                        f_r.write(str(list(self.relation[r])))
-                        f_r.write("\n")
+            if epoch % 10 == 0:
+                with open(temp_path + "entity_temp.pkl", "wb") as f_e:
+                    pickle.dump(self.entity, f_e)
+                with open(temp_path + "relation_temp.pkl", "wb") as f_r:
+                    pickle.dump(self.relation, f_r)
 
         print("写入文件...")
         with codecs.open("entity_50dim_batch400", "w") as f1:
@@ -259,11 +264,11 @@ class TransE:
 
 
 if __name__=='__main__':
-    file1 = "data\\"
+    file1 = "./data/"
     entity_set, relation_set, triple_list = data_loader(file1)
     print("load file...")
     print("Complete load. entity : %d , relation : %d , triple : %d" % (len(entity_set),len(relation_set),len(triple_list)))
 
     transE = TransE(entity_set, relation_set, triple_list, './output/ent_rel_sim.npy', use_w2v = True, nbatch=100, embedding_dim=50, learning_rate=0.01, margin=1,L1=True)
     transE.emb_initialize()
-    transE.train(epochs=30)
+    transE.train(epochs=30, temp_path='./temp')
