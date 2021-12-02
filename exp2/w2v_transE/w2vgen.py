@@ -53,5 +53,5 @@ def ent_rel_sim(ent_num, rel_num, output_path):
     np.save(output_path + 'ent_rel_sim.npy', ent_rel_sim)
     
 if __name__  == '__main__':
-    w2vModel('../data/', './output/')
+    w2vModel('./data/', './output/')
     ent_rel_sim(14541, 237, './output/')
