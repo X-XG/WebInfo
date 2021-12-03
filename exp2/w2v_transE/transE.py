@@ -249,7 +249,7 @@ if __name__=='__main__':
     print("load file...")
     print("Complete load. entity : %d , relation : %d , triple : %d" % (len(entity_set),len(relation_set),len(triple_list)))
 
-    transE = TransE(entity_set, relation_set, triple_list, './output/ent_rel_sim.npy', use_w2v = False, nbatch=100, embedding_dim=50, learning_rate=0.01, margin=1,L1=True)
+    transE = TransE(entity_set, relation_set, triple_list, './output/ent_rel_sim.npy', use_w2v = False, nbatch=100, embedding_dim=200, learning_rate=0.01, margin=5,L1=True)
     # transE.emb_initialize()
     transE.reload('./temp/')
-    transE.train(epochs=100, temp_path='./temp/')
+    transE.train(epochs=0, temp_path='./temp/')
