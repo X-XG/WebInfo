@@ -41,7 +41,7 @@ def distanceL1(h,r,t):
     return np.sum(np.fabs(h+r-t))
 
 class TransE:
-    def __init__(self,entity_set, relation_set, triple_list, ent_rel_sim_path, use_w2v = False, nbatch = 400,
+    def __init__(self,entity_set, relation_set, triple_list, ent_rel_sim_path, use_w2v = False,mu = 1, nbatch = 400,
                  embedding_dim=100, learning_rate=0.01, margin=1,L1=True):
         self.embedding_dim = embedding_dim
         self.learning_rate = learning_rate
@@ -50,6 +50,7 @@ class TransE:
         self.relation = relation_set
         self.triple_list = triple_list
         self.L1=L1
+        self.mu = mu
 
         self.nbatch = nbatch
         self.use_w2v = use_w2v
@@ -176,8 +177,10 @@ class TransE:
             t_corrupt = self.entity[corrupted_triple[1]]
 
             if self.use_w2v:
-                w2v_correct = self.ent_rel_sim[int(triple[0])][int(triple[2])] * self.ent_rel_sim[int(triple[1])][int(triple[2])]
-                w2v_corrupt = self.ent_rel_sim[int(corrupted_triple[0])][int(triple[2])] * self.ent_rel_sim[int(corrupted_triple[1])][int(triple[2])]
+                w2v_correct = self.ent_rel_sim[int(triple[0])][int(triple[2])] \
+                            * self.ent_rel_sim[int(triple[1])][int(triple[2])]
+                w2v_corrupt = self.ent_rel_sim[int(corrupted_triple[0])][int(triple[2])] \
+                            * self.ent_rel_sim[int(corrupted_triple[1])][int(triple[2])]
                 w2v_revise = w2v_correct - w2v_corrupt
 
             if self.L1:
@@ -240,7 +243,7 @@ class TransE:
         self.relation = copy_relation
 
     def hinge_loss(self,dist_correct,dist_corrupt, w2v_revise):
-            return max(0,dist_correct-dist_corrupt+self.margin + w2v_revise)
+            return max(0,dist_correct-dist_corrupt+self.margin + self.mu*w2v_revise)
 
 
 if __name__=='__main__':
@@ -249,7 +252,7 @@ if __name__=='__main__':
     print("load file...")
     print("Complete load. entity : %d , relation : %d , triple : %d" % (len(entity_set),len(relation_set),len(triple_list)))
 
-    transE = TransE(entity_set, relation_set, triple_list, './output/ent_rel_sim.npy', use_w2v = False, nbatch=100, embedding_dim=200, learning_rate=0.01, margin=5,L1=True)
-    # transE.emb_initialize()
-    transE.reload('./temp/')
-    transE.train(epochs=0, temp_path='./temp/')
+    transE = TransE(entity_set, relation_set, triple_list, './output/ent_rel_sim.npy', use_w2v = True, mu=12,nbatch=100, embedding_dim=200, learning_rate=0.001, margin=4.0,L1=True)
+    transE.emb_initialize()
+    # transE.reload('./temp/')
+    transE.train(epochs=100, temp_path='./temp/')

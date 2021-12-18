@@ -1,3 +1,4 @@
+from pickle import FALSE, TRUE
 import numpy as np
 import codecs
 import operator
@@ -56,12 +57,25 @@ class Test:
         self.hits5 = 0
         self.mean_rank = 0
 
-    def rank(self, output_path):
-        hits = 0
-        step = 1
-        f = open(output_path + 'tail_predict.txt', 'w')
+    def rank(self, output_path, re_continue, re_hits):
+        if re_continue:
+            f = open(output_path + 'tail_predict.txt', 'r')
+            step = len(f.readlines())
+            hits = re_hits
+            f.close()
+            f = open(output_path + 'tail_predict.txt', 'a')
+            past = step
+        else:
+            hits = 0
+            step = 0
+            f = open(output_path + 'tail_predict.txt', 'w')
+            past = 0
+        
 
         for triple in self.test_triple:
+            if past > 0:
+                past -= 1
+                continue
             rank_tail_dict = {}
 
             for entity in self.entity_dict.keys():
@@ -100,11 +114,11 @@ class Test:
                     first_hit = False
 
             step += 1
-            if step % 10 == 0:
+            if step % 20 == 0:
                 print("step ", step, ", hits ",hits, ', rate: ',hits/step)
                 print()
 
-        self.hits5 = hits / (2*len(self.test_triple))
+        self.hits5 = hits / len(self.test_triple)
 
 
 if __name__ == '__main__':
@@ -116,7 +130,7 @@ if __name__ == '__main__':
 
 
     test = Test(entity_dict,relation_dict,test_triple,train_triple,isFit=True)
-    test.rank('./output/')
+    test.rank('./output/',re_continue=False, re_hits=0)
     print("entity hits@5: ", test.hits5)
 
 
