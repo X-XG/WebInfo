@@ -27,12 +27,10 @@ rel_max = 237
 total_append = 0
 f = open('./data/train.txt', 'a')
 for sig in map: 
-    # sim = []
     rel = rel_base
     for ent in map:
         if int(sig) >= int(ent):
             continue
-        # sim.append(wv.n_similarity(map[sig], map[ent]))
         s = wv.n_similarity(map[sig], map[ent])
         if s > 0.975:
             rel += 1
@@ -42,17 +40,7 @@ for sig in map:
             f.write(ent + '\t'+ str(rel) + '\t' + sig + '\n')
     
     count += 1
-    # if count % 10 == 0:
     total_append += 2*(rel - rel_base)
     print(str(count) + '\t' +'cur: ' + str(rel-rel_base) +'\t' +'total: ' + str(total_append))
-    # sim.sort(reverse=True)
 
 print(rel_max)
-    # rel = 0
-    # for s in sim:
-    #     if s > 0.95:
-    #         rel += 1
-    # # if sim[1] - sim[2] > 8*(sim[2] - sim[3]):
-    #         print(sig + '\t'+ str(rel) + '\t' + ent)
-    #     else:
-    #         break
