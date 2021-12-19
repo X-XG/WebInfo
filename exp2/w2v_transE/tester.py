@@ -3,7 +3,7 @@ import numpy as np
 import codecs
 import operator
 import json
-from transE import data_loader
+from trainer import data_loader
 
 def dataloader(entity_file,relation_file,test_file):
     # entity_file: entity \t embedding

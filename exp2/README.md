@@ -4,6 +4,8 @@
 exp2/
 |----data/
 	...
+|----rhash/
+	...
 |----openke_transE/
 	|----base/
 	|----config/
