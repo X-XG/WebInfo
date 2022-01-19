@@ -99,6 +99,22 @@ class Matrix_Factorization(object):
         return R_hat,self.P,self.Q
 
 if __name__ == '__main__':
+    data_path = '../../data/DoubanMusic.txt'
+    UserMap = {}
+
+    f = open(data_path, 'r')
+    lines = f.readlines()
+    f.close()
+
+    for line in lines:
+        temp = line.split()
+        UserID = int(temp[0])
+        for pair in temp[1:]:
+            MusicID = int(pair.split(',')[0])
+            if UserID not in UserMap:
+                UserMap[UserID] = [MusicID]
+            else:
+                UserMap[UserID].append(MusicID)
 
     user_total=23599
     item_total=21602
@@ -122,7 +138,14 @@ if __name__ == '__main__':
 
     with open(write_data_path+"res.txt","w") as f:
         for userID in range(0,user_total):
+            count = 0
             output_str=str(userID)+sep
-            for music_index in range(item_total-100,item_total):
+            for music_index in reversed(range(item_total)):
+                Music = RatingRank[userID][music_index]
+                if Music in UserMap[userID]:
+                    continue
                 output_str+=str(RatingRank[userID][music_index])+comma
+                count += 1
+                if count == 100:
+                    break
             f.write(output_str[:-1]+'\n')
