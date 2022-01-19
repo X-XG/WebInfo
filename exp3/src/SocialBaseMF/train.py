@@ -3,12 +3,12 @@ import cmath
 
 class Matrix_Factorization(object):
 
-    def __init__(self, K=10, alpha=0.1, beta=0.02, epoch=10, regularization=True, random_state=100):
+    def __init__(self,P,Q, K=10, alpha=0.5, beta=0.02, epoch=3, regularization=True, random_state=100):
 
         self.R = None
         self.K = K
-        self.P = None
-        self.Q = None
+        self.P = P
+        self.Q = Q
         self.r_index = None
         self.r = None
         self.length = None
@@ -106,13 +106,12 @@ if __name__ == '__main__':
     comma=','
     write_data_path=".//result//"
     
-    Rating=np.load('Rating.npy')
     R_hat=np.load('R_hat.npy')
     P=np.load('P.npy')
     Q=np.load('Q.npy')
 
-    aa = Matrix_Factorization(K = 5)
-    aa.fit(Rating)
+    aa = Matrix_Factorization(P,Q,K = 5)
+    aa.fit(R_hat)
     R_hat,P,Q=aa.start()
 
     np.save('R_hat',R_hat)
