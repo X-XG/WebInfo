@@ -1,8 +1,8 @@
 import numpy as np
 
-MatSimPath = 'MatJaccobiSim_DiagMinimized.npy'
+MatSimPath = 'MatJaccobiSim1.npy'
 data_path = '../../data/DoubanMusic.txt'
-result_path = 'MusicBase.txt'
+result_path = 'MusicBaseMode1.txt'
 MusicNum = 21602
 
 def main(CarryOn = False):
@@ -37,6 +37,8 @@ def main(CarryOn = False):
             continue
         predict_list = []
         for MusicID in range(MusicNum):
+            if MusicID in UserMap[UserID]:
+                continue
             predict = 0
             for UserMusic in UserMap[UserID]:
                 predict += MatSim[UserMusic][MusicID]
@@ -54,4 +56,4 @@ def main(CarryOn = False):
             print(count)
 
 if __name__ == '__main__':
-    main(CarryOn=True)
+    main(CarryOn=False)
