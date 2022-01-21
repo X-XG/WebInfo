@@ -1,3 +1,4 @@
+from math import sqrt
 import numpy as np
 
 MusicNum = 21602
@@ -6,26 +7,19 @@ data_path = '../../data/DoubanMusic.txt'
 output_path = '../../output/'
 
 
-def JaccobiSim(list1:list, list2:list):
+def JaccobiSim(list1:list, list2:list, mode = 1):
     intersection = len(set(list1).intersection(set(list2)))
     union = len(list1) + len(list2) - intersection
-    return intersection/union
-    # intersection = 0
-    # i = 0
-    # j = 0
-    # while i < len(list1) and j < len(list2):
-    #     if list1[i] == list2[j]:
-    #         intersection += 1
-    #         i += 1
-    #         j += 1
-    #     elif list1[i] < list2[j]:
-    #         i += 1
-    #     else:
-    #         j += 1
-    # union = len(list1) + len(list2) - intersection
-    # return intersection/union
+    if mode == 0:
+        return intersection
+    elif mode == 0.5:
+        return intersection/sqrt(union)
+    elif mode == 1:
+        return intersection/union
+    else:
+        exit(-1)
 
-def MatSimGen():
+def MatSimGen(mode = 1):
     MapMusicID = {}
     MatSim = np.zeros((MusicNum, MusicNum))
 
@@ -49,8 +43,8 @@ def MatSimGen():
         if num %10 == 0:
             print(num)
         for Music2 in MapMusicID:
-            MatSim[Music1][Music2] = JaccobiSim(MapMusicID[Music1], MapMusicID[Music2])
-    np.save('MatJaccobiSim.npy', MatSim)
+            MatSim[Music1][Music2] = JaccobiSim(MapMusicID[Music1], MapMusicID[Music2], mode)
+    np.save('MatJaccobiSim'+str(mode) +'.npy', MatSim)
     
 def MatDiagMinimize():
     MatSim = np.load('MatJaccobiSim.npy')
@@ -59,7 +53,5 @@ def MatDiagMinimize():
     np.save('MatJaccobiSim_DiagMinimized.npy', MatSim)
     
 if __name__ == '__main__':
-    MatDiagMinimize()
-    # MatSimGen()
-
-
+    # MatDiagMinimize()
+    MatSimGen(mode = 1)
