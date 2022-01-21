@@ -3,7 +3,7 @@ import cmath
 
 class Matrix_Factorization(object):
 
-    def __init__(self, K=10, alpha=0.001, beta=0.5, epoch=1, regularization=True, random_state=100):
+    def __init__(self, K=10, alpha=0.01, beta=0.1, epoch=1, regularization=True, random_state=100):
 
         self.R = None
         self.K = K
@@ -124,32 +124,17 @@ if __name__ == '__main__':
     f.close()
 
     followMap=[]
-    MeanRating=[]
     Rating=np.zeros((user_total,item_total))
     for line in lines:
         temp=line.split()
         UserID=int(temp[0])
-        PosTotal=0
-        PosCnt=0
         for pair in temp[1:]:
             pair=pair.split(',')
             MusicID=int(pair[0])
             MusicRating=int(pair[1])
-            Rating[UserID,MusicID]=MusicRating/5
-            if MusicRating>0:
-                PosTotal+=Rating[UserID,MusicID]
-                PosCnt+=1
-        if PosCnt>0:
-            MeanRating.append(PosTotal/PosCnt)
-        else:
-            MeanRating.append(0.5)
-
-    for userID in range(0,user_total):
-        for itemID in range(0,item_total):
-            if Rating[userID,itemID]<0:
-                Rating[userID,itemID]=MeanRating[userID]
+            Rating[UserID,MusicID]=1
         
-    aa = Matrix_Factorization(K = 1000)
+    aa = Matrix_Factorization(K = 20)
     aa.fit(Rating)
     R_hat,P,Q=aa.start()
 
