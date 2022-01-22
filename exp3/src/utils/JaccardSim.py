@@ -1,6 +1,6 @@
 from math import sqrt
 
-def JaccobiSim(list1:list, list2:list, mode = 1):
+def JaccardSim(list1:list, list2:list, mode = 1):
     intersection = len(set(list1).intersection(set(list2)))
     union = len(list1) + len(list2) - intersection
     if mode == 0:

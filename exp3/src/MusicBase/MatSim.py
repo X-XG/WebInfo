@@ -7,7 +7,7 @@ data_path = '../../data/DoubanMusic.txt'
 output_path = '../../output/'
 
 
-def JaccobiSim(list1:list, list2:list, mode = 1):
+def JaccardSim(list1:list, list2:list, mode = 1):
     intersection = len(set(list1).intersection(set(list2)))
     union = len(list1) + len(list2) - intersection
     if mode == 0:
@@ -43,14 +43,14 @@ def MatSimGen(mode = 1):
         if num %10 == 0:
             print(num)
         for Music2 in MapMusicID:
-            MatSim[Music1][Music2] = JaccobiSim(MapMusicID[Music1], MapMusicID[Music2], mode)
-    np.save('MatJaccobiSim'+str(mode) +'.npy', MatSim)
+            MatSim[Music1][Music2] = JaccardSim(MapMusicID[Music1], MapMusicID[Music2], mode)
+    np.save('MatJaccardSim'+str(mode) +'.npy', MatSim)
     
 def MatDiagMinimize():
-    MatSim = np.load('MatJaccobiSim.npy')
+    MatSim = np.load('MatJaccardSim.npy')
     for i in range(MusicNum):
         MatSim[i][i] = MIN_NUM
-    np.save('MatJaccobiSim_DiagMinimized.npy', MatSim)
+    np.save('MatJaccardSim_DiagMinimized.npy', MatSim)
     
 if __name__ == '__main__':
     # MatDiagMinimize()

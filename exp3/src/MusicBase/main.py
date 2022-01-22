@@ -1,6 +1,6 @@
 import numpy as np
 
-MatSimPath = 'MatJaccobiSim1.npy'
+MatSimPath = 'MatJaccardSim1.npy'
 data_path = '../../data/DoubanMusic.txt'
 result_path = 'MusicBaseMode1.txt'
 MusicNum = 21602

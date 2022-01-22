@@ -1,7 +1,7 @@
 import sys
 sys.path.append('..')
 from utils.getMaps import getUserMap
-from utils.JacoobiSim import JaccobiSim
+from utils.JaccardSim import JaccardSim
 sys.path.append('UserBase')
 import numpy as np
 
@@ -20,8 +20,8 @@ def MatSimGen(mode = 1):
         if num %10 == 0:
             print(num)
         for User2 in UserMap:
-            MatSim[User1][User2] = JaccobiSim(UserMap[User1], UserMap[User2], mode)
-    np.save('MatJaccobiSim'+str(mode) +'.npy', MatSim)
+            MatSim[User1][User2] = JaccardSim(UserMap[User1], UserMap[User2], mode)
+    np.save('MatJaccardSim'+str(mode) +'.npy', MatSim)
     
 if __name__ == '__main__':
     MatSimGen(mode = 1)
